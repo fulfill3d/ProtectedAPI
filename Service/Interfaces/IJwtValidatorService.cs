@@ -4,6 +4,6 @@ namespace ProtectedAPI.Service.Interfaces
 {
     public interface IJwtValidatorService
     {
-        Task<string?> AuthenticateAndAuthorize(HttpRequestData req, string[] acceptedScopes);
+        Task<string?> ValidateTokenAndCheckScopes(HttpRequestData req, string[] acceptedScopes);
     }
 }

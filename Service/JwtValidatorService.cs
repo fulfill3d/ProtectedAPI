@@ -21,7 +21,7 @@ namespace ProtectedAPI.Service
         private readonly ConfigurationManager<OpenIdConnectConfiguration> _configurationManager = 
             new (opt.Value.MetadataUrl, new OpenIdConnectConfigurationRetriever());
 
-        public async Task<string?> AuthenticateAndAuthorize(HttpRequestData req, string[] acceptedScopes)
+        public async Task<string?> ValidateTokenAndCheckScopes(HttpRequestData req, string[] acceptedScopes)
         {
             if (!req.Headers.TryGetValues(AuthKey, out var authHeaders))
             {
@@ -46,7 +46,9 @@ namespace ProtectedAPI.Service
                     ValidateAudience = true,
                     ValidAudience = _clientId,
                     ValidateLifetime = true,
-                    IssuerSigningKeys = openIdConfig.SigningKeys
+                    IssuerSigningKeys = openIdConfig.SigningKeys,
+                    ValidateIssuerSigningKey = true,
+                    RequireSignedTokens = true
                 };
 
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -57,7 +59,7 @@ namespace ProtectedAPI.Service
                     .SelectMany(c => c.Value.Split(' '))
                     .ToList();
 
-                if (!scopes.Any(scope => acceptedScopes.Contains(scope)))
+                if (!scopes.Any(scope => acceptedScopes.Contains(scope, StringComparer.OrdinalIgnoreCase)))
                 {
                     return null;
                 }

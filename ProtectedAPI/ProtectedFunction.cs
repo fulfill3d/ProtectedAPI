@@ -18,7 +18,7 @@ namespace ProtectedAPI
             HttpRequestData req, ExecutionContext executionContext)
         {
             var acceptedScopes = new[] { _protectedScope.TestScope };
-            var userId = await jwtValidatorService.AuthenticateAndAuthorize(req, acceptedScopes);
+            var userId = await jwtValidatorService.ValidateTokenAndCheckScopes(req, acceptedScopes);
                 
             var response = req.CreateResponse();
             if (userId == null)
